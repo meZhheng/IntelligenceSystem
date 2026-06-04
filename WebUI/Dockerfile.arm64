@@ -1,0 +1,30 @@
+FROM docker.1ms.run/node:20.19 AS builder
+WORKDIR /usr/src/app
+
+# 只先拷贝 package 文件，利用缓存
+COPY ./frontend/package*.json ./
+
+RUN npm ci --prefer-offline --no-audit
+
+# 拷贝项目代码（.dockerignore 排除 node_modules）
+COPY ./frontend ./
+
+# 修复目标脚本权限（保险起见）
+RUN chmod -R a+rx node_modules/vue-tsc || true \
+ && chmod -R a+rx node_modules/vite || true
+
+# 用 node 直接运行 vue-tsc，再用 npx/vite 做构建（两种兼容方式）
+RUN npx -y vite build \
+ && chmod -R a+rX /usr/src/app/dist
+
+# 运行阶段：使用 Nginx 镜像作为运行时镜像
+FROM docker.1ms.run/nginx:latest
+
+# 将构建阶段生成的 dist 目录复制到 Nginx 的默认静态文件目录
+COPY --from=builder /usr/src/app/dist /usr/share/nginx/html
+
+# 复制自定义的 Nginx 配置文件到 Nginx 容器内
+COPY ./nginx/nginx.conf /etc/nginx/nginx.conf
+
+# 暴露容器内端口
+EXPOSE 80

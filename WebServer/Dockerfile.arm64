@@ -1,0 +1,46 @@
+# 镜像环境，我们要 python 3.8.0
+FROM docker.1ms.run/chinayin/playwright:1.52.0-python3.11 as base
+
+RUN chmod 1777 /tmp/
+
+# 配置工作目录
+WORKDIR /app
+
+RUN pip config --user set global.progress_bar off
+
+# 执行安装 Python 环境依赖
+RUN pip install -i https://pypi.tuna.tsinghua.edu.cn/simple gunicorn gevent
+
+# 先复制pytorch依赖文件，利用缓存
+COPY requirements-torch.txt .
+RUN pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements-torch.txt
+
+# 复制依赖文件，利用缓存
+COPY requirements.txt .
+
+# 使用 Tsinghua 镜像安装依赖
+RUN pip install -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
+
+# RUN playwright install --with-deps firefox webkit
+
+COPY ./checkpoints/zh_core_web_trf-3.8.0.tar.gz ./checkpoints/zh_core_web_trf-3.8.0.tar.gz
+
+# 安装 spaCy 模型
+RUN pip install -i https://pypi.tuna.tsinghua.edu.cn/simple ./checkpoints/zh_core_web_trf-3.8.0.tar.gz
+
+# 安装Kingbase 数据库驱动
+# RUN pip install git+https://gitee.com/LFunTech/sqlalchemy_kingbase.git
+
+COPY . .
+COPY config.json /app/app/config.json
+COPY config.json /app/config.json
+
+# 9. 设置环境变量
+ENV FLASK_ENV=production
+ENV ARCH=arm64
+# 10. 暴露 Flask 默认端口
+EXPOSE 5000
+
+# 11. 设置容器启动命令
+ENTRYPOINT ["python", "-m", "flask", "run", "--debug", "--host=0.0.0.0", "--port=5000"]
+

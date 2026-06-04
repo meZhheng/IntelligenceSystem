@@ -1,0 +1,63 @@
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+
+  color-scheme: light dark;
+  color: rgba(255, 255, 255, 0.87);
+  background-color: #242424;
+
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  --card-bg: #ffffff;
+  --card-radius: 8px;
+  --card-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --primary-color: #4A90E2;
+  --text-color: #2E3A59;
+  --subtext-color: #6B7280;
+  --badge-bg: #F3F4F6;
+  --badge-color: #374151;
+  --gap: 16px;
+
+  --sidebar-bg: #474849;
+  --section-bg: #2E3A47;
+  --text-light: #E5E7EB;
+  --text-muted: #9CA3AF;
+  --highlight: #4A90E2;
+  --indent: 16px;
+}
+
+a {
+  font-weight: 500;
+  color: #646cff;
+  text-decoration: inherit;
+}
+a:hover {
+  color: #535bf2;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    color: #213547;
+    background-color: #ffffff;
+  }
+  a:hover {
+    color: #747bff;
+  }
+  button {
+    background-color: #f9f9f9;
+  }
+}
+
+input:-webkit-autofill {
+  background-color: transparent !important; /* 透明背景 */
+  -webkit-box-shadow: 0 0 0px 1000px white inset !important; /* 伪造白色背景 */
+  transition: background-color 5000s ease-in-out 0s; /* 延迟背景色变化 */
+}
+
+input:-moz-autofill {
+  background-color: transparent !important;
+}
